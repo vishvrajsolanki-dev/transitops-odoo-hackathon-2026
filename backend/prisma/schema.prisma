@@ -1,0 +1,26 @@
+// TASK-001A owns this file exclusively during the schema-building session.
+// Models to define: User, Role, Vehicle, Driver, Trip, MaintenanceLog, FuelLog, Expense, SafetyScoreLog
+// Locked contract reminders:
+// - Vehicle.registrationNumber -> @unique, @map("registration_number")
+// - Vehicle.status enum: available | on_trip | in_shop | retired
+// - Driver.status enum: available | on_trip | off_duty | suspended
+// - Trip.revenue Decimal? (nullable until trip completion) — resolves ROI gap
+// - SafetyScoreLog(driverId, oldScore, newScore, reason, changedBy, timestamp)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// model User { ... }
+// model Vehicle { ... }
+// model Driver { ... }
+// model Trip { ... }
+// model MaintenanceLog { ... }
+// model FuelLog { ... }
+// model Expense { ... }
+// model SafetyScoreLog { ... }
