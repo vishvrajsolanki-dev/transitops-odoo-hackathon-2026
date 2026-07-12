@@ -41,7 +41,7 @@ async function createTrip(payload, user) {
       );
     }
 
-    // 2. Driver eligibility (license expiry + suspension)
+    // 2. Driver eligibility (license expiry, suspension, or any non-available status)
     const eligibility = await isDriverEligible(driverId);
     if (!eligibility.eligible) {
       const messages = {
@@ -49,7 +49,11 @@ async function createTrip(payload, user) {
         DRIVER_SUSPENDED: 'Driver is suspended',
         DRIVER_NOT_FOUND: 'Driver not found',
       };
-      throw new TripValidationError(eligibility.reason, messages[eligibility.reason] || 'Driver is not eligible', 400);
+      const message = messages[eligibility.reason]
+        || (eligibility.reason?.startsWith('DRIVER_STATUS_')
+          ? `Driver is not available (status: ${eligibility.reason.replace('DRIVER_STATUS_', '').toLowerCase()})`
+          : 'Driver is not eligible');
+      throw new TripValidationError(eligibility.reason, message, 400);
     }
 
     // 3. Vehicle availability
@@ -61,14 +65,6 @@ async function createTrip(payload, user) {
       );
     }
 
-    // 4. Driver availability
-    if (driver.status !== 'available') {
-      throw new TripValidationError(
-        'DRIVER_UNAVAILABLE',
-        `Driver is not available for dispatch (current status: ${driver.status})`,
-        409
-      );
-    }
 
     // 5. Double-booking — vehicle already on an open trip (draft or dispatched)
     const vehicleOpenTrip = await tx.trip.findFirst({

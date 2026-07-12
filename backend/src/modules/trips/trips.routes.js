@@ -6,8 +6,8 @@ const checkPermission = require('../../middleware/checkPermission');
 
 router.use(authenticate);
 
-router.post('/', checkPermission('trip', 'create'), tripsController.createTrip);
-router.get('/', checkPermission('trip', 'view'), tripsController.listTrips);
-router.get('/:id', checkPermission('trip', 'view'), tripsController.getTripById);
+router.post('/', checkPermission('trips', 'create'), tripsController.createTrip);
+router.get('/', checkPermission('trips', 'view'), tripsController.listTrips);
+router.get('/:id', checkPermission('trips', 'view'), tripsController.getTripById);
 
 module.exports = router;
