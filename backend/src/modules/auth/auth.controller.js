@@ -17,10 +17,10 @@ function issueToken(user) {
 }
 
 async function register(req, res) {
-  const { email, password, role } = req.body;
+  const { email, password, name, role } = req.body;
 
-  if (!email || !password || !role) {
-    return error(res, 'MISSING_FIELDS', 'email, password, and role are required', 400);
+  if (!email || !password || !name || !role) {
+    return error(res, 'MISSING_FIELDS', 'email, password, name, and role are required', 400);
   }
 
   try {
@@ -30,11 +30,12 @@ async function register(req, res) {
     }
 
     const passwordHash = await authService.hashPassword(password);
-    const user = await authService.createUser({ email, passwordHash, role });
+    const user = await authService.createUser({ email, passwordHash, name, role });
     const token = issueToken(user);
 
     return success(res, { token, user: { id: user.id, email: user.email, role: user.role } }, 201);
   } catch (err) {
+    console.error('[auth.register] failed:', err);
     return error(res, 'REGISTER_FAILED', 'Could not register user', 500);
   }
 }
@@ -52,7 +53,7 @@ async function login(req, res) {
       return error(res, 'INVALID_CREDENTIALS', 'Invalid email or password', 401);
     }
 
-    const passwordMatches = await authService.verifyPassword(password, user.password_hash);
+    const passwordMatches = await authService.verifyPassword(password, user.passwordHash);
     if (!passwordMatches) {
       return error(res, 'INVALID_CREDENTIALS', 'Invalid email or password', 401);
     }
@@ -60,6 +61,7 @@ async function login(req, res) {
     const token = issueToken(user);
     return success(res, { token, user: { id: user.id, email: user.email, role: user.role } });
   } catch (err) {
+    console.error('[auth.login] failed:', err);
     return error(res, 'LOGIN_FAILED', 'Could not log in', 500);
   }
 }
