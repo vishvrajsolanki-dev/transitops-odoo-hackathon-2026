@@ -1,7 +1,39 @@
-// TASK: trips controller
-// Owns request/response handling only. Business logic goes in trips.service.js
-// Always return through utils/response.js (success/error envelope) — see project README.
+const tripsService = require('./trips.service');
 
-module.exports = {
-  // e.g. list, getById, create, update, remove
-};
+async function createTrip(req, res) {
+  try {
+    const trip = await tripsService.createTrip(req.body, req.user);
+    return res.status(201).json({ success: true, data: trip });
+  } catch (err) {
+    return res.status(err.statusCode || 400).json({
+      success: false,
+      error: { code: err.code || 'TRIP_CREATE_FAILED', message: err.message }
+    });
+  }
+}
+
+async function listTrips(req, res) {
+  try {
+    const trips = await tripsService.listTrips(req.user, req.query);
+    return res.status(200).json({ success: true, data: trips });
+  } catch (err) {
+    return res.status(err.statusCode || 400).json({
+      success: false,
+      error: { code: err.code || 'TRIP_LIST_FAILED', message: err.message }
+    });
+  }
+}
+
+async function getTripById(req, res) {
+  try {
+    const trip = await tripsService.getTripById(req.params.id, req.user);
+    return res.status(200).json({ success: true, data: trip });
+  } catch (err) {
+    return res.status(err.statusCode || 404).json({
+      success: false,
+      error: { code: err.code || 'TRIP_NOT_FOUND', message: err.message }
+    });
+  }
+}
+
+module.exports = { createTrip, listTrips, getTripById };
