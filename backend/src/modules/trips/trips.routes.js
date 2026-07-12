@@ -10,4 +10,8 @@ router.post('/', checkPermission('trips', 'create'), tripsController.createTrip)
 router.get('/', checkPermission('trips', 'view'), tripsController.listTrips);
 router.get('/:id', checkPermission('trips', 'view'), tripsController.getTripById);
 
+router.patch('/:id/dispatch', checkPermission('trips', 'dispatch'), tripsController.dispatchTrip);
+router.patch('/:id/complete', checkPermission('trips', 'complete'), tripsController.completeTrip);
+router.patch('/:id/cancel', checkPermission('trips', 'cancel'), tripsController.cancelTrip);
+
 module.exports = router;

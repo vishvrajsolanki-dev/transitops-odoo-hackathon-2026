@@ -14,6 +14,7 @@ const PERMISSIONS = {
     vehicles: ['view'],
     drivers: ['view'],
     trips: ['view', 'create'],
+    trips: ['view', 'create', 'complete'],
     maintenance: [],
     'fuel-expense': ['logFuel'],
     reports: [],
