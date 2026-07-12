@@ -8,6 +8,11 @@ const authService = require('./auth.service');
 
 const JWT_EXPIRES_IN = '8h'; // matches the hackathon window; revisit if this outlives the demo
 
+// Matches the 4 roles locked in PROJECT_APPROACH.md §4 (RBAC matrix).
+// Prevents arbitrary/typo'd role strings from reaching the DB and checkPermission.
+// ⚠️ CONFIRM these match schema.prisma's actual role enum values before relying on this.
+const VALID_ROLES = ['fleet_manager', 'driver', 'safety_officer', 'financial_analyst'];
+
 function issueToken(user) {
   // Payload shape is a locked interface contract: { userId, role, iat, exp }.
   // iat/exp are added automatically by jwt.sign — never add extra fields here.
@@ -21,6 +26,10 @@ async function register(req, res) {
 
   if (!email || !password || !name || !role) {
     return error(res, 'MISSING_FIELDS', 'email, password, name, and role are required', 400);
+  }
+
+  if (!VALID_ROLES.includes(role)) {
+    return error(res, 'INVALID_ROLE', `role must be one of: ${VALID_ROLES.join(', ')}`, 400);
   }
 
   try {

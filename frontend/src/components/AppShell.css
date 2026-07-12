@@ -1,0 +1,384 @@
+/* ============================================================
+   AppShell Styles — Sidebar + Topbar + Content layout
+   All colors reference design tokens from tokens.css
+   ============================================================ */
+
+/* ── Root Layout ──────────────────────────────────────── */
+
+.appshell {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+/* ── Sidebar ──────────────────────────────────────────── */
+
+.appshell-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background-color: var(--color-sidebar-bg);
+  transition: width var(--transition-slow);
+  overflow: hidden;
+}
+
+.appshell--collapsed .appshell-sidebar {
+  width: var(--sidebar-collapsed-width);
+}
+
+.appshell-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--color-sidebar-divider);
+}
+
+.appshell-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.appshell-logo-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.appshell-logo-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.appshell-logo-text {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-inverse);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.appshell-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-sidebar-text);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.appshell-collapse-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-text-inverse);
+}
+
+/* ── Navigation ───────────────────────────────────────── */
+
+.appshell-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-3);
+  overflow-y: auto;
+}
+
+.appshell-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3);
+  color: var(--color-sidebar-icon);
+  text-decoration: none;
+  border-radius: var(--radius-lg);
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  position: relative;
+}
+
+.appshell-nav-item:hover {
+  background: var(--color-sidebar-bg-hover);
+  color: var(--color-text-inverse);
+  text-decoration: none;
+  transform: translateX(2px);
+}
+
+.appshell-nav-item--active {
+  background: rgba(249, 115, 22, 0.12);
+  color: var(--color-sidebar-icon-active);
+}
+
+.appshell-nav-item--active::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background-color: var(--color-sidebar-icon-active);
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+}
+
+.appshell-nav-item--active:hover {
+  color: var(--color-sidebar-icon-active);
+}
+
+.appshell-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.appshell-nav-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Sidebar Footer / User Info ───────────────────────── */
+
+.appshell-sidebar-footer {
+  padding: var(--space-4) var(--space-3);
+  border-top: 1px solid var(--color-sidebar-divider);
+}
+
+.appshell-user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+}
+
+.appshell-user-avatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+  border-radius: var(--radius-full);
+}
+
+.appshell-user-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.appshell-user-email {
+  font-size: var(--font-size-xs);
+  color: var(--color-sidebar-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.appshell-user-role {
+  font-size: var(--font-size-xs);
+  color: var(--color-sidebar-icon);
+  font-weight: var(--font-weight-medium);
+}
+
+.appshell-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-sidebar-text);
+  background: none;
+  border: 1px solid var(--color-sidebar-divider);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.appshell-logout-btn:hover {
+  background: rgba(220, 38, 38, 0.12);
+  color: #FCA5A5;
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+/* ── Main Content Area ────────────────────────────────── */
+
+.appshell-main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left var(--transition-slow);
+}
+
+.appshell--collapsed .appshell-main {
+  margin-left: var(--sidebar-collapsed-width);
+}
+
+/* ── Top Bar ──────────────────────────────────────────── */
+
+.appshell-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--topbar-height);
+  padding: 0 var(--space-8);
+  background-color: var(--color-card-bg);
+  border-bottom: 1px solid var(--color-card-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.appshell-topbar-greeting {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.appshell-topbar-welcome {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.appshell-topbar-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  text-transform: capitalize;
+}
+
+.appshell-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.appshell-role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  border-radius: var(--radius-full);
+  letter-spacing: 0.02em;
+}
+
+/* ── Page Content ─────────────────────────────────────── */
+
+.appshell-content {
+  flex: 1;
+  padding: var(--space-8);
+}
+
+/* ── Mobile Menu ──────────────────────────────────────── */
+
+.appshell-overlay {
+  display: none;
+}
+
+.appshell-mobile-menu-btn {
+  display: none;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: flex;
+  }
+
+  .appshell-sidebar {
+    transform: translateX(-100%);
+    width: var(--sidebar-width);
+    transition: transform var(--transition-slow);
+  }
+
+  .appshell--collapsed .appshell-sidebar {
+    width: var(--sidebar-width);
+  }
+
+  .appshell-sidebar--mobile-open {
+    transform: translateX(0);
+  }
+
+  .appshell-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .appshell-main {
+    margin-left: 0;
+  }
+
+  .appshell--collapsed .appshell-main {
+    margin-left: 0;
+  }
+
+  .appshell-mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: none;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast);
+  }
+
+  .appshell-mobile-menu-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .appshell-topbar {
+    padding: 0 var(--space-4);
+  }
+
+  .appshell-content {
+    padding: var(--space-4);
+  }
+}
