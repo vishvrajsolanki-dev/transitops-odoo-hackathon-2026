@@ -1,10 +1,9 @@
 // TASK: auth routes
 const express = require('express');
 const router = express.Router();
-// const controller = require('./auth.controller');
-// const auth = require('../../middleware/auth');
-// const checkPermission = require('../../middleware/checkPermission');
+const controller = require('./auth.controller');
 
-// router.get('/', auth, checkPermission('auth', 'view'), controller.list);
+router.post('/register', controller.register);
+router.post('/login', controller.login);
 
 module.exports = router;
