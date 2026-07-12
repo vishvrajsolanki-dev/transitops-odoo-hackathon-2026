@@ -133,4 +133,75 @@ async function getTripById(id, user) {
   return trip;
 }
 
-module.exports = { createTrip, listTrips, getTripById };
+/**
+ * Shared atomic transition: Trip status + Vehicle status + Driver status,
+ * all in one transaction — dispatch/complete/cancel all funnel through this
+ * so the "all three or none" guarantee lives in exactly one place.
+ */
+async function transitionTrip(tripId, { fromStatuses, toStatus, vehicleStatus, driverStatus, extraFields = {} }) {
+  return prisma.$transaction(async (tx) => {
+    const trip = await tx.trip.findUnique({ where: { id: tripId } });
+    if (!trip) {
+      throw new TripValidationError('TRIP_NOT_FOUND', 'Trip not found', 404);
+    }
+    if (!fromStatuses.includes(trip.status)) {
+      throw new TripValidationError(
+        'INVALID_TRIP_STATUS',
+        `Trip must be in one of [${fromStatuses.join(', ')}] to do this (current: ${trip.status})`,
+        409
+      );
+    }
+
+    const updatedTrip = await tx.trip.update({
+      where: { id: tripId },
+      data: { status: toStatus, ...extraFields },
+    });
+
+    await tx.vehicle.update({
+      where: { id: trip.vehicleId },
+      data: { status: vehicleStatus },
+    });
+
+    await tx.driver.update({
+      where: { id: trip.driverId },
+      data: { status: driverStatus },
+    });
+
+    return updatedTrip;
+  });
+}
+
+async function dispatchTrip(tripId, user) {
+  return transitionTrip(tripId, {
+    fromStatuses: ['draft'],
+    toStatus: 'dispatched',
+    vehicleStatus: 'on_trip',
+    driverStatus: 'on_trip',
+    extraFields: { dispatchedAt: new Date() },
+  });
+}
+
+async function completeTrip(tripId, revenue, user) {
+  if (revenue == null || Number(revenue) < 0) {
+    throw new TripValidationError('INVALID_REVENUE', 'A valid non-negative revenue value is required', 400);
+  }
+  return transitionTrip(tripId, {
+    fromStatuses: ['dispatched'],
+    toStatus: 'completed',
+    vehicleStatus: 'available',
+    driverStatus: 'available',
+    extraFields: { completedAt: new Date(), revenue },
+  });
+}
+
+async function cancelTrip(tripId, user) {
+  return transitionTrip(tripId, {
+    fromStatuses: ['dispatched'],
+    toStatus: 'cancelled',
+    vehicleStatus: 'available',
+    driverStatus: 'available',
+    extraFields: { cancelledAt: new Date() },
+  });
+}
+
+module.exports = { createTrip, listTrips, getTripById, dispatchTrip, completeTrip, cancelTrip };
