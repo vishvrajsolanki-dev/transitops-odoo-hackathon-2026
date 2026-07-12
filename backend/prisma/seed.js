@@ -1,8 +1,11 @@
 // backend/prisma/seed.js
-// Skeleton only — TASK-001A deliverable. Real seed data (multiple vehicles,
+// Skeleton only â€” TASK-001A deliverable. Real seed data (multiple vehicles,
 // drivers, a full trip lifecycle for demo rehearsal) belongs to TASK-010.
 // Run with: npm run prisma:seed  (package.json has no "prisma.seed" config
-// block, so `npx prisma db seed` won't resolve this file — use the npm script)
+// block, so `npx prisma db seed` won't resolve this file â€” use the npm script)
+//
+// NOTE: passwordHash below is a temporary bcrypt hash for "Test1234!",
+// generated locally to unblock TASK-003A RBAC testing. Not production data.
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -11,7 +14,7 @@ async function main() {
   const fleetManager = await prisma.user.create({
     data: {
       email: "fleet.manager@transitops.dev",
-      passwordHash: "REPLACE_WITH_BCRYPT_HASH",
+      passwordHash: "$2b$10$9MBN1.r0OsAM1k./mlsnP.25VfCXG380yP7d9/X80H/ztNdxIGiNy",
       name: "Fleet Manager",
       role: "fleet_manager",
     },
@@ -20,7 +23,7 @@ async function main() {
   const driverUser = await prisma.user.create({
     data: {
       email: "driver@transitops.dev",
-      passwordHash: "REPLACE_WITH_BCRYPT_HASH",
+      passwordHash: "$2b$10$9MBN1.r0OsAM1k./mlsnP.25VfCXG380yP7d9/X80H/ztNdxIGiNy",
       name: "Driver Account",
       role: "driver",
     },
@@ -29,7 +32,7 @@ async function main() {
   await prisma.user.create({
     data: {
       email: "safety.officer@transitops.dev",
-      passwordHash: "REPLACE_WITH_BCRYPT_HASH",
+      passwordHash: "$2b$10$9MBN1.r0OsAM1k./mlsnP.25VfCXG380yP7d9/X80H/ztNdxIGiNy",
       name: "Safety Officer",
       role: "safety_officer",
     },
@@ -38,7 +41,7 @@ async function main() {
   await prisma.user.create({
     data: {
       email: "financial.analyst@transitops.dev",
-      passwordHash: "REPLACE_WITH_BCRYPT_HASH",
+      passwordHash: "$2b$10$9MBN1.r0OsAM1k./mlsnP.25VfCXG380yP7d9/X80H/ztNdxIGiNy",
       name: "Financial Analyst",
       role: "financial_analyst",
     },
