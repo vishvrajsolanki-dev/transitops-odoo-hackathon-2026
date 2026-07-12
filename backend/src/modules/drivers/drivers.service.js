@@ -155,17 +155,11 @@ async function deleteDriver(id) {
 }
 
 /**
- * Single source of truth for driver-side dispatch eligibility.
- * TASK-004 calls this rather than re-deriving the same checks.
+ * Pure eligibility logic — no DB access, takes an already-fetched driver.
+ * Split out specifically so it's testable without a live database connection.
  * Returns { eligible, reason } — reason is null only when eligible is true.
  */
-async function isDriverEligible(driverId) {
-    const driver = await prisma.driver.findUnique({ where: { id: driverId } });
-
-    if (!driver) {
-        return { eligible: false, reason: 'DRIVER_NOT_FOUND' };
-    }
-
+function evaluateDriverEligibility(driver) {
     if (driver.status === 'suspended') {
         return { eligible: false, reason: 'DRIVER_SUSPENDED' };
     }
@@ -180,6 +174,22 @@ async function isDriverEligible(driverId) {
     }
 
     return { eligible: true, reason: null };
+}
+
+/**
+ * Single source of truth for driver-side dispatch eligibility.
+ * TASK-004 calls this rather than re-deriving the same checks.
+ * Thin DB-fetch wrapper around evaluateDriverEligibility() — the fetch and
+ * the logic are deliberately separate so the logic can be unit tested alone.
+ */
+async function isDriverEligible(driverId) {
+    const driver = await prisma.driver.findUnique({ where: { id: driverId } });
+
+    if (!driver) {
+        return { eligible: false, reason: 'DRIVER_NOT_FOUND' };
+    }
+
+    return evaluateDriverEligibility(driver);
 }
 
 /**
@@ -235,5 +245,6 @@ module.exports = {
     updateDriver,
     deleteDriver,
     isDriverEligible,
+    evaluateDriverEligibility,
     updateSafetyScore,
 };
