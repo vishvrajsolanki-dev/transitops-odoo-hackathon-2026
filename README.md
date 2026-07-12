@@ -97,25 +97,11 @@ cd frontend
 npm install
 npm run dev
 ```
-
-## Team Task Board
-
-| Task | Scope | Status |
-|---|---|---|
-| TASK-001A | DB Schema | Not Started |
-| TASK-001B | Auth Scaffold | Not Started |
-| TASK-002A | Vehicle Registry API | Not Started |
-| TASK-002B | Driver Management API | Not Started |
-| TASK-003 | RBAC matrix + Auth UI + base layout | Not Started |
-| TASK-004 | Trip/Dispatch Rule Engine | Not Started |
-| TASK-005 | Maintenance + Fuel/Expense | Not Started |
-| TASK-006 | Registry UI + Trip form | Not Started |
-| TASK-007 | Reports/Analytics endpoints | Not Started |
-| TASK-008 | Dashboard KPIs + filters + CSV export | Not Started |
-| TASK-009 | Live State-Machine Visualizer | Not Started |
-| TASK-010 | Integration + seed data + demo script | Not Started |
-
 ## Git Workflow
+
+- Feature branches off `main`, one per feature area
+- `main` is protected — PR + one teammate review before merge
+
 
 - Branch naming: `feature/task-XXX-short-name`
 - Commit prefix: `[TASK-XXX] short description`
