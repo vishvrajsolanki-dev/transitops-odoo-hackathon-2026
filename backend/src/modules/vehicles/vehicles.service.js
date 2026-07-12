@@ -1,5 +1,5 @@
 // backend/src/modules/vehicles/vehicles.service.js
-const prisma = require('../../config/db'); // adjust path if your singleton lives elsewhere
+const prisma = require('../../config/db'); // adjust path if your Prisma client singleton lives elsewhere
 
 async function getVehicles(filters = {}) {
   const { type, status, region } = filters;
@@ -27,10 +27,22 @@ async function deleteVehicle(id) {
   return prisma.vehicle.delete({ where: { id } });
 }
 
+// The single canonical status-transition function the locked vehicleStatus
+// Interface Contract requires. Accepts a Prisma transaction client so
+// callers (maintenance, and later trip dispatch) include this write inside
+// their own transaction instead of firing an unguarded separate update.
+async function setVehicleStatus(tx, vehicleId, newStatus) {
+  return tx.vehicle.update({
+    where: { id: vehicleId },
+    data: { status: newStatus },
+  });
+}
+
 module.exports = {
   getVehicles,
   getVehicleById,
   createVehicle,
   updateVehicle,
   deleteVehicle,
+  setVehicleStatus,
 };
