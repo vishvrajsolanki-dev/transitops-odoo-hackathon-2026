@@ -17,10 +17,10 @@ async function findUserByEmail(email) {
   return prisma.user.findUnique({ where: { email } });
 }
 
-async function createUser({ email, passwordHash, role }) {
+async function createUser({ email, passwordHash, name, role }) {
   try {
     return await prisma.user.create({
-      data: { email, password_hash: passwordHash, role },
+      data: { email, passwordHash, name, role },
     });
   } catch (err) {
     // Prisma unique-constraint violation — translate here so the controller

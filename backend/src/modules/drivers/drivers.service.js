@@ -138,6 +138,11 @@ async function updateDriver(id, payload) {
 /**
  * Deletes only the Driver row. The linked User account is left in place —
  * deliberate: login/history isn't wiped, just the driver profile.
+ *
+ * Blocked if the driver has SafetyScoreLog history: the FK constraint is
+ * RESTRICT (not CASCADE) by design, since audit trail integrity matters more
+ * than allowing an unconditional delete. Caught here and translated into a
+ * clean 409 instead of leaking a raw Postgres/Prisma error to the client.
  */
 async function deleteDriver(id) {
     try {
@@ -148,6 +153,16 @@ async function deleteDriver(id) {
             return {
                 success: false,
                 error: { code: 'DRIVER_NOT_FOUND', message: 'No driver found with that id.' },
+            };
+        }
+        // Postgres RESTRICT violation from safety_score_logs FK — driver has audit history.
+        if (err.message?.includes('safety_score_logs_driver_id_fkey')) {
+            return {
+                success: false,
+                error: {
+                    code: 'DRIVER_HAS_HISTORY',
+                    message: 'Cannot delete a driver with safety score history. Audit trail must be preserved.',
+                },
             };
         }
         throw err;
