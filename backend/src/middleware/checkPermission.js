@@ -47,18 +47,24 @@ const OWN_RECORD_SCOPES = {
   },
 };
 
+// action can be a single string (existing behavior, unaffected) or an array
+// of acceptable action strings (new — needed when two roles use different
+// permission names on the same route, e.g. Driver 'logFuel' vs Financial
+// Analyst 'create' both POSTing to /api/fuel-logs).
 function checkPermission(module, action) {
   return (req, res, next) => {
     const role = req.user.role;
 
     const allowedActions = PERMISSIONS[role]?.[module] || [];
+    const requiredActions = Array.isArray(action) ? action : [action];
+    const hasPermission = requiredActions.some((a) => allowedActions.includes(a));
 
-    if (!allowedActions.includes(action)) {
+    if (!hasPermission) {
       return res.status(403).json({
         success: false,
         error: {
           code: 'PERMISSION_DENIED',
-          message: `Role '${role}' cannot perform '${action}' on '${module}'`,
+          message: `Role '${role}' cannot perform '${requiredActions.join("' or '")}' on '${module}'`,
         },
       });
     }

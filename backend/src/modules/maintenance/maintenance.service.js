@@ -64,9 +64,22 @@ async function closeMaintenance(id) {
     });
 }
 
+// Added for TASK-005B (fuel-expense) — sums all maintenance cost for one
+// vehicle. fuel-expense.service.js calls this rather than querying
+// MaintenanceLog directly (Interface Contract — one domain owns its own
+// aggregation). Null sum (no records) resolves to 0, never crashes.
+async function getMaintenanceCostForVehicle(vehicleId) {
+    const result = await prisma.maintenanceLog.aggregate({
+        where: { vehicleId },
+        _sum: { cost: true },
+    });
+    return Number(result._sum.cost || 0);
+}
+
 module.exports = {
     getMaintenanceLogs,
     getMaintenanceById,
     createMaintenance,
     closeMaintenance,
+    getMaintenanceCostForVehicle,
 };
